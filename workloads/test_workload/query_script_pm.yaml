@@ -1,0 +1,8 @@
+max_worker_num: 10000
+queries:
+  - id: 1
+    at_second: 3
+    sql: select * from fact
+  - id: 2
+    at_second: 6
+    sql: select * from lookup

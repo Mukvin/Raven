@@ -1,0 +1,36 @@
+events:
+  - name: ON_PM_QUERY_START
+    at_hour: 0 #12pm in day 1's noon
+    description: Analysts start to work in Day 1's afternoon. Raven will randomly issue queries to engine in the following N hours,
+      where N = time(ON_PM_QUERY_FINISH) - time(ON_PM_QUERY_START). Statistically the frequency of queries may exhibit a distribution like Guass distribution.
+  - name: ON_PM_QUERY_FINISH
+    at_hour: 6 #6pm in day 1's afternoon
+    description: Analysts get off work for Day 1. No more queries will arrive until next morning. Raven asynchronously invokes engine's ON_PM_QUERY_FINISH callback to allow engine to release
+      resource(if possible) in the coming night
+  - name: ON_ETL_START
+    at_hour: 12 #0am in the morning
+    description: Day 2's ETL starts
+  - name: ON_ETL_FINISH_30_MINUTES_COUNTDOWN
+    description: Raven asynchronously notifies engine that ETL job will finish in 30 minutes
+    ## at_hour of this event is automatically calculated as: time(ON_ETL_FINISH) - 1/2
+    # CAUTION: It's not allowed define another "ON_ETL_FINISH_XX_MINUTES_COUNTDOWN", unless you can prove the extra time your engine needs is unproportional to the size of historical data size
+  - name: ON_ETL_FINISH
+    at_hour: 18 #6am in the morning
+    description: Day 2's ETL has finished, new queryable data are loaded in S3 bucket. Raven asynchronously invokes engine's ON_ETL_FINISH callback to allow engine get prepared for
+      the queries to come. Typical prepare jobs may include lauching cluster, ingesting data, building index, etc. engine should garantee all the jobs finish in N hours,
+      where N = time(ON_AM_QUERY_START) - time(ON_ETL_FINISH).
+  - name: ON_QUERY_START_30_MINUTES_COUNTDOWN
+    description: Raven asynchronously notifies engine that the queries will come in 30 minutes.
+    ## at_hour of this event is automatically calculated as: time(ON_AM_QUERY_START) - 1/2
+    # CAUTION: It's not allowed define another "ON_QUERY_START_XX_MINUTES_COUNTDOWN", unless you can prove the extra time your engine needs is unproportional to the size of historical data size
+  - name: ON_AM_QUERY_START
+    at_hour: 20 #8am in the morning
+    description: Analysts start to work in Day 2's morning. After asynchronously invoking engine's ON_AM_QUERY_START callback, Raven will randomly issue queries to engine in the following N hours,
+      where N = time(ON_AM_QUERY_FINISH) - time(ON_AM_QUERY_START). Statistically the frequency of queries may exhibit a distribution like Guass distribution.
+  - name: ON_AM_QUERY_FINISH
+    at_hour: 24 #12pm in the noon
+    description: Analysts go for lunch for Day 2. This remarks the end of our benchmarkig period.
+
+
+
+

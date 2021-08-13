@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  ###
+  # Create an AWS Glue database
+  CFNDatabaseRaven:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: raven_test_workload_db
+        Description: Database to hold tables for raven test workload
+  ###
+  # Create an AWS Glue table
+  CFNFactTableRaven:
+    # Creating the table waits for the database to be created
+    DependsOn: CFNDatabaseRaven
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: raven_test_workload_db
+      TableInput:
+        Name: orders
+        Description: test fact table
+        TableType: EXTERNAL_TABLE
+        Parameters: {
+          #          "classification": "csv"
+        }
+        #       ViewExpandedText: String
+        PartitionKeys:
+          - Name: order_dt
+            Type: int
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Columns:
+            - Name: amount
+              Type: double
+            - Name: customer_id
+              Type: string
+            - Name: category
+              Type: string
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Location: s3://raven-olap-benchmark/test-workload/orders
+          SerdeInfo:
+            #            Parameters:
+            #              field.delim: ","
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+
+      ###
+      # Create an AWS Glue table
+  CFNLookupTableRaven:
+    # Creating the table waits for the database to be created
+    DependsOn: CFNDatabaseRaven
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: raven_test_workload_db
+      TableInput:
+        Name: customers
+        Description: test lookup table
+        TableType: EXTERNAL_TABLE
+        Parameters: {
+          #          "classification": "csv"
+        }
+        #       ViewExpandedText: String
+        #        PartitionKeys:
+        #          # Data is partitioned by month
+        #          - Name: order_dt
+        #            Type: int
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Columns:
+            - Name: customer_id
+              Type: string
+            - Name: gender
+              Type: string
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Location: s3://raven-olap-benchmark/test-workload/customers
+          SerdeInfo:
+            #            Parameters:
+            #              field.delim: ","
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe

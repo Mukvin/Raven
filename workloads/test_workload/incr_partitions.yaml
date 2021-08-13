@@ -1,0 +1,8 @@
+databases:
+  - name: raven_db
+    tables:
+      - name: raven_fact
+        partition_location_template: s3://raven-olap-benchmark/test-workload/orders/order_dt=%value%/
+        partitions:
+          - order_dt: 20210103
+
