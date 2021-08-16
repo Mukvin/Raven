@@ -2,4 +2,4 @@ venv/
 .idea/
 .pytest_cache/
 __pycache__/
-logs/
+logs/*.log
