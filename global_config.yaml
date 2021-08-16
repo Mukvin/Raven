@@ -1,2 +1,10 @@
 WORKLOAD: test_workload
+
 ENGINE: athena
+
+# tagging for AWS resources
+TAGS:
+    Owner: hongbin.ma@kyligence.io
+    Cost Center: EE
+    Project: Raven
+    CRR: CRR35688

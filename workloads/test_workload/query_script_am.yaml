@@ -2,7 +2,7 @@ max_worker_num: 10000
 queries:
   - id: 1
     at_second: 3
-    sql: select * from fact
+    sql: select * from raven_test_workload_db.orders
   - id: 2
     at_second: 6
-    sql: select * from lookup
+    sql: select * from raven_test_workload_db.customers

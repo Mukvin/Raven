@@ -35,8 +35,7 @@ def try_boto():
     s = 'abc'
     if s.startswith('x' or 'athena'):
         print('hello')
-    client = boto3.client('ec2',
-                          region_name='us-west-2')
+    client = boto3.client('ec2', region_name='us-west-2')
     filters = [
         # {
         #     'Name': 'tag:Owner',
@@ -72,8 +71,7 @@ def spider(page):
 
 
 if __name__ == '__main__':
-    print(os.getenv("JAVA_HOMEj"))
-
+    pool = ThreadPoolExecutor(max_workers=3)
 
 # Press the green button in the gutter to run the script.
 # if __name__ == '__main__':
@@ -103,3 +101,4 @@ if __name__ == '__main__':
 # try_boto()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+

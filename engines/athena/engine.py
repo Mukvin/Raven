@@ -1,3 +1,4 @@
+import os
 import time
 
 import yaml
@@ -10,17 +11,19 @@ from pyathenajdbc import connect
 class Engine:
 
     def __init__(self) -> None:
-        with open("athena_config.yaml", encoding="UTF-8") as ac:
+        dir = os.path.dirname(__file__)
+        with open(os.path.join(dir, "athena_config.yaml"), encoding="UTF-8") as ac:
             athena_config = yaml.load(ac, Loader=yaml.FullLoader)
         self.conn = connect(S3OutputLocation=athena_config["AWS_ATHENA_S3_STAGING_DIR"],
                             AwsRegion=athena_config["AWS_REGION"])
+        self.print_result = athena_config['PRINT_RESULT']
 
     def launch_cluster(self):
         logging.info(f'Athena: no op in launch_cluster')
         pass
 
     def prepare_historical_data(self):
-        logging.info(f'Athena: no op in launch_cluster')
+        logging.info(f'Athena: no op in prepare_historical_data')
         pass
 
     # on failed queries, exceptions MUST be raised!
@@ -28,8 +31,12 @@ class Engine:
         start = time.time()
         with self.conn.cursor() as cursor:
             cursor.execute(sql)
-            cursor.fetchall()  # Just make sure the result is fetched to local
-        return time.time() - start
+            ret = cursor.fetchall()  # Just make sure the result is fetched to local
+            if self.print_result:
+                logging.info(ret)
+        duration = time.time() - start
+        logging.info(f'a query took {duration} to complete')
+        return duration
 
     def destroy(self):
         self.conn.close()
