@@ -29,6 +29,8 @@ no_load_historical_partitions = False
 no_prepare_historical_data = False
 no_load_incr_partitions = False
 
+hook_exec_pool = ThreadPoolExecutor(max_workers=10)
+
 
 def run():
     logging.info(f"Initializing Glue with historical data ...")
@@ -43,7 +45,7 @@ def run():
     logging.info(f"Launching the engine {engine_name} ...")
     engine_module = importlib.import_module(f'engines.{engine_name}')
     global engine
-    engine = engine_module.Engine()
+    engine = engine_module.engine.Engine()
     engine.launch_cluster()
 
     logging.info(f"Preparing historical data using engine {engine_name}, this may very long time ...")
@@ -85,8 +87,14 @@ def query(sql):
 
 
 def timed_exec(e):
-    # use a sub process to call engine's callback without being affected
-    subprocess.Popen(['python', f'engines/{engine_name}/{e["name"]}.py'])
+    # use a separate thread to call engine's callback without being affected
+    hook_module = importlib.import_module(f'engines.{engine_name}.{e["name"]}')
+    f = hook_exec_pool.submit(hook_module.hook, engine)
+
+    if e['name'] == 'ON_AM_QUERY_FINISH':
+        # syn wait
+        f.result()
+        engine.destroy()
 
     if e['name'] == 'ON_ETL_FINISH' and not no_load_incr_partitions:
         load_inr_partitions()
@@ -121,6 +129,7 @@ def timed_exec(e):
             result_book += [future.result()]
         assert len(result_book) == todo_num
         logging.info(f"{todo_num} queries are finished, all query durations: {result_book}")
+        pool.shutdown(wait=True)
 
 
 def init_glue_tables():
@@ -273,3 +282,4 @@ if __name__ == '__main__':
     no_load_incr_partitions = args.no_load_incr_partitions
 
     run()
+

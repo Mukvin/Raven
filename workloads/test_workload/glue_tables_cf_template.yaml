@@ -8,7 +8,7 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       DatabaseInput:
         Name: raven_test_workload_db
-        Description: Database to hold tables for raven test workload
+        Description:  Database to hold tables for raven test workload
   ###
   # Create an AWS Glue table
   CFNFactTableRaven:

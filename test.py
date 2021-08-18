@@ -4,6 +4,7 @@
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Timer
 
 import boto3 as boto3
 import pandas as pd
@@ -69,9 +70,42 @@ def spider(page):
     print(f"crawl task{page} finished")
     return page
 
+def foo():
+    print('foo')
+
+def hi():
+    print('hi')
+    pool = ThreadPoolExecutor(max_workers=3)
+    pool.submit(foo).result()
+    pool.submit(foo).result()
+    pool.shutdown()
+
+
+hook_exec_pool = ThreadPoolExecutor(max_workers=10)
+
+import engines.athena.engine
+engine = engines.athena.engine.Engine()
+
+def zoo():
+    engine.accept_query("select * from raven_test_workload_db.orders")
+    logging.info("query done")
+
+def zoo2():
+    # engine.accept_query("select * from raven_test_workload_db.orders")
+    logging.info("query done")
 
 if __name__ == '__main__':
-    pool = ThreadPoolExecutor(max_workers=3)
+
+    import logging.config
+    logging.config.fileConfig('logging.conf')
+
+    engine.accept_query("select * from raven_test_workload_db.orders")
+    hook_exec_pool.submit(zoo)
+    #time.sleep(10)
+    engine.destroy()
+    #hook_exec_pool.shutdown()
+
+
 
 # Press the green button in the gutter to run the script.
 # if __name__ == '__main__':
