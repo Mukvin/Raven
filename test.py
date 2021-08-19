@@ -70,8 +70,10 @@ def spider(page):
     print(f"crawl task{page} finished")
     return page
 
+
 def foo():
     print('foo')
+
 
 def hi():
     print('hi')
@@ -84,28 +86,43 @@ def hi():
 hook_exec_pool = ThreadPoolExecutor(max_workers=10)
 
 import engines.athena.engine
+
 engine = engines.athena.engine.Engine()
 
+
 def zoo():
-    engine.accept_query("select * from raven_test_workload_db.orders")
+    engine.accept_query("raven_test_workload_db", "select * from raven_test_workload_db.orders")
     logging.info("query done")
+
 
 def zoo2():
     # engine.accept_query("select * from raven_test_workload_db.orders")
     logging.info("query done")
 
+
 if __name__ == '__main__':
+    for i in range(22000):
+        print(i)
+    mu, sigma = 0, 1  # mean and standard deviation
+    s = np.random.normal(mu, sigma, 1000)
+    import matplotlib.pyplot as plt
+
+    count, bins, ignored = plt.hist(s, 30, density=True)
+    plt.plot(bins, 1 / (sigma * np.sqrt(2 * np.pi)) *
+             np.exp(- (bins - mu) ** 2 / (2 * sigma ** 2)),
+             linewidth=2, color='r')
+    plt.show()
+
 
     import logging.config
+
     logging.config.fileConfig('logging.conf')
 
-    engine.accept_query("select * from raven_test_workload_db.orders")
+    engine.accept_query("raven_test_workload_db", "select * from raven_test_workload_db.orders")
     hook_exec_pool.submit(zoo)
-    #time.sleep(10)
+    # time.sleep(10)
     engine.destroy()
-    #hook_exec_pool.shutdown()
-
-
+    # hook_exec_pool.shutdown()
 
 # Press the green button in the gutter to run the script.
 # if __name__ == '__main__':
@@ -135,4 +152,3 @@ if __name__ == '__main__':
 # try_boto()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
-

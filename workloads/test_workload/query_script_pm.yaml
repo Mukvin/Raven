@@ -1,4 +1,5 @@
 max_worker_num: 10000
+database: raven_test_workload_db
 queries:
   - id: 1
     at_second: 3

@@ -9,6 +9,6 @@ class Engine:
         pass
 
     # on failed queries, exceptions MUST be raised!
-    def accept_query(self, sql):
+    def accept_query(self, db, sql):
         pass
 #

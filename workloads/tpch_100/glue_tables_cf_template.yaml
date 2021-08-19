@@ -1,0 +1,267 @@
+AWSTemplateFormatVersion:  '2010-09-09'
+Resources:
+  CFNRAVENTPCH100DB:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: raven_tpch_100_db
+        Description:  Database to hold tables for raven tpch-100 tables
+  CFNRAVENTPCHTBLCUSTOMER:
+    # Creating the table waits for the database to be created
+    DependsOn: CFNRAVENTPCH100DB
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: raven_tpch_100_db
+      TableInput:
+        Name: customer
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Columns:
+            - Name: c_custkey
+              Type: bigint
+            - Name: c_name
+              Type: string
+            - Name: c_address
+              Type: string
+            - Name: c_nationkey
+              Type: bigint
+            - Name: c_phone
+              Type: string
+            - Name: c_acctbal
+              Type: double
+            - Name: c_mktsegment
+              Type: string
+            - Name: c_comment
+              Type: string
+          Location: s3://raven-olap-benchmark/workload-tpch-100/customer
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+  CFNRAVENTPCHTBLLINEITEM:
+    # Creating the table waits for the database to be created
+    DependsOn: CFNRAVENTPCH100DB
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: raven_tpch_100_db
+      TableInput:
+        Name: lineitem
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Columns:
+            - Name: l_orderkey
+              Type: bigint
+            - Name: l_partkey
+              Type: bigint
+            - Name: l_suppkey
+              Type: bigint
+            - Name: l_linenumber
+              Type: int
+            - Name: l_quantity
+              Type: double
+            - Name: l_extendedprice
+              Type: double
+            - Name: l_discount
+              Type: double
+            - Name: l_tax
+              Type: double
+            - Name: l_returnflag
+              Type: string
+            - Name: l_linestatus
+              Type: string
+            - Name: l_shipdate
+              Type: string
+            - Name: l_commitdate
+              Type: string
+            - Name: l_receiptdate
+              Type: string
+            - Name: l_shipinstruct
+              Type: string
+            - Name: l_shipmode
+              Type: string
+            - Name: l_comment
+              Type: string
+          Location: s3://raven-olap-benchmark/workload-tpch-100/lineitem
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+  CFNRAVENTPCHTBLNATION:
+    # Creating the table waits for the database to be created
+    DependsOn: CFNRAVENTPCH100DB
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: raven_tpch_100_db
+      TableInput:
+        Name: nation
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Columns:
+            - Name: n_nationkey
+              Type: bigint
+            - Name: n_name
+              Type: string
+            - Name: n_regionkey
+              Type: bigint
+            - Name: n_comment
+              Type: string
+          Location: s3://raven-olap-benchmark/workload-tpch-100/nation
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+  CFNRAVENTPCHTBLORDERS:
+    # Creating the table waits for the database to be created
+    DependsOn: CFNRAVENTPCH100DB
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: raven_tpch_100_db
+      TableInput:
+        Name: orders
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Columns:
+            - Name: o_orderkey
+              Type: bigint
+            - Name: o_custkey
+              Type: bigint
+            - Name: o_orderstatus
+              Type: string
+            - Name: o_totalprice
+              Type: double
+            - Name: o_orderdate
+              Type: string
+            - Name: o_orderpriority
+              Type: string
+            - Name: o_clerk
+              Type: string
+            - Name: o_shippriority
+              Type: int
+            - Name: o_comment
+              Type: string
+          Location: s3://raven-olap-benchmark/workload-tpch-100/orders
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+  CFNRAVENTPCHTBLPART:
+    # Creating the table waits for the database to be created
+    DependsOn: CFNRAVENTPCH100DB
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: raven_tpch_100_db
+      TableInput:
+        Name: part
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Columns:
+            - Name: p_partkey
+              Type: bigint
+            - Name: p_name
+              Type: string
+            - Name: p_mfgr
+              Type: string
+            - Name: p_brand
+              Type: string
+            - Name: p_type
+              Type: string
+            - Name: p_size
+              Type: int
+            - Name: p_container
+              Type: string
+            - Name: p_retailprice
+              Type: double
+            - Name: p_comment
+              Type: string
+          Location: s3://raven-olap-benchmark/workload-tpch-100/part
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+  CFNRAVENTPCHTBLPARTSUPP:
+    # Creating the table waits for the database to be created
+    DependsOn: CFNRAVENTPCH100DB
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: raven_tpch_100_db
+      TableInput:
+        Name: partsupp
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Columns:
+            - Name: ps_partkey
+              Type: bigint
+            - Name: ps_suppkey
+              Type: bigint
+            - Name: ps_availqty
+              Type: int
+            - Name: ps_supplycost
+              Type: double
+            - Name: ps_comment
+              Type: string
+          Location: s3://raven-olap-benchmark/workload-tpch-100/partsupp
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+  CFNRAVENTPCHTBLREGION:
+      # Creating the table waits for the database to be created
+      DependsOn: CFNRAVENTPCH100DB
+      Type: AWS::Glue::Table
+      Properties:
+        CatalogId: !Ref AWS::AccountId
+        DatabaseName: raven_tpch_100_db
+        TableInput:
+          Name: region
+          TableType: EXTERNAL_TABLE
+          StorageDescriptor:
+            OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+            InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+            Columns:
+              - Name: r_regionkey
+                Type: bigint
+              - Name: r_name
+                Type: string
+              - Name: r_comment
+                Type: string
+            Location: s3://raven-olap-benchmark/workload-tpch-100/region
+            SerdeInfo:
+              SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+  CFNRAVENTPCHTBLSUPPLIER:
+      # Creating the table waits for the database to be created
+      DependsOn: CFNRAVENTPCH100DB
+      Type: AWS::Glue::Table
+      Properties:
+        CatalogId: !Ref AWS::AccountId
+        DatabaseName: raven_tpch_100_db
+        TableInput:
+          Name: supplier
+          TableType: EXTERNAL_TABLE
+          StorageDescriptor:
+            OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+            InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+            Columns:
+              - Name: s_suppkey
+                Type: bigint
+              - Name: s_name
+                Type: string
+              - Name: s_address
+                Type: string
+              - Name: s_nationkey
+                Type: bigint
+              - Name: s_phone
+                Type: string
+              - Name: s_acctbal
+                Type: double
+              - Name: s_comment
+                Type: string
+            Location: s3://raven-olap-benchmark/workload-tpch-100/supplier
+            SerdeInfo:
+              SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe

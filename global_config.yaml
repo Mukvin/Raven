@@ -1,4 +1,5 @@
-WORKLOAD: test_workload
+#WORKLOAD: test_workload
+WORKLOAD: tpch_100
 
 ENGINE: athena
 

@@ -76,10 +76,10 @@ def check_query_script(am_or_pm, query_script, at_second_max):
         assert todo['at_second'] >= 0, f'at_second for query {todo["id"]} in query_script_{am_or_pm} less than 0'
 
 
-def query(sql):
+def query(db, sql):
     try:
         q_start = time.time()
-        engine.accept_query(sql)
+        engine.accept_query(db, sql)
         q_end = time.time()
         return q_end - q_start
     except:
@@ -124,7 +124,7 @@ def timed_exec(e):
             logging.info(
                 f"Query {sql_and_time['id']}, expected at second {sql_and_time['at_second']}," +
                 f" actual at second {time.time() - query_time_zero}")
-            futures += [pool.submit(query, sql_and_time['sql'])]
+            futures += [pool.submit(query, query_script['database'], sql_and_time['sql'])]
         for future in as_completed(futures):
             result_book += [future.result()]
         assert len(result_book) == todo_num
@@ -237,30 +237,31 @@ def load_partitions(historical_or_incr):
         # },
         # 'LastAnalyzedTime': datetime(2015, 1, 1)
     }
-    for db_dict in historical_partitions['databases']:
-        for table_dict in db_dict['tables']:
-            partition_input_list = []
-            for partition_dict in table_dict['partitions']:
-                temp = copy.deepcopy(partition_input_template)
-                values = []
-                for key in partition_dict:
-                    values += [str(partition_dict[key])]
-                temp['Values'] = values
-                location = table_dict['partition_location_template']
-                for v in values:
-                    location = str(location).replace('%value%', str(v), 1)
-                temp['StorageDescriptor']['Location'] = location
-                partition_input_list += [temp]
+    if historical_partitions:
+        for db_dict in historical_partitions['databases']:
+            for table_dict in db_dict['tables']:
+                partition_input_list = []
+                for partition_dict in table_dict['partitions']:
+                    temp = copy.deepcopy(partition_input_template)
+                    values = []
+                    for key in partition_dict:
+                        values += [str(partition_dict[key])]
+                    temp['Values'] = values
+                    location = table_dict['partition_location_template']
+                    for v in values:
+                        location = str(location).replace('%value%', str(v), 1)
+                    temp['StorageDescriptor']['Location'] = location
+                    partition_input_list += [temp]
 
-            logging.info(
-                f"Creating {len(partition_input_list)} partitions" +
-                f" for table {db_dict['name']}.{table_dict['name']} ...")
-            r = glue.batch_create_partition(
-                DatabaseName=db_dict['name'],
-                TableName=table_dict['name'],
-                PartitionInputList=partition_input_list
-            )
-            assert not r['Errors'] or len(r['Errors']) == 0
+                logging.info(
+                    f"Creating {len(partition_input_list)} partitions" +
+                    f" for table {db_dict['name']}.{table_dict['name']} ...")
+                r = glue.batch_create_partition(
+                    DatabaseName=db_dict['name'],
+                    TableName=table_dict['name'],
+                    PartitionInputList=partition_input_list
+                )
+                assert not r['Errors'] or len(r['Errors']) == 0
 
 
 if __name__ == '__main__':
@@ -282,4 +283,3 @@ if __name__ == '__main__':
     no_load_incr_partitions = args.no_load_incr_partitions
 
     run()
-
