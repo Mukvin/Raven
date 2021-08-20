@@ -7,9 +7,9 @@ from os import listdir
 from os.path import isfile, join
 
 if __name__ == '__main__':
-    generate_path = '/Users/hongbin.ma/code/tpch-kit/dbgen/scale100_queries_sample'
-    query_count = 22
-    guassian_dist = False
+    generate_path = '/Users/hongbin.ma/code/tpch-kit/dbgen/scale100_queries'
+    query_count = 22000
+    guassian_dist = True
 
 
     def readfile(f):
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             if 2.5 > value > -2.5:  # -2.5 < value < 2.5 chance is about 97%
                 at_seconds.append((value + 2.5) * 3600)  # distributed in 5 hours
         else:
-            at_seconds.append(len(at_seconds))
+            at_seconds.append(len(at_seconds))  # this is for testing
 
     at_seconds.sort()
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     for i in range(query_count):
         todo.append({"id": queries[i]["id"], "at_second": at_seconds[i], "sql": queries[i]["sql"]})
 
-    print(todo)
+    # print(todo)
 
     script = {"max_worker_num": 10000, "database": "raven_tpch_100_db", "queries": todo}
     result = yaml.dump(script)
