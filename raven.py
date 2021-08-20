@@ -76,13 +76,14 @@ def check_query_script(am_or_pm, query_script, at_second_max):
         assert todo['at_second'] >= 0, f'at_second for query {todo["id"]} in query_script_{am_or_pm} less than 0'
 
 
-def query(db, sql):
+def query(db, sql, id):
     try:
         q_start = time.time()
         engine.accept_query(db, sql)
         q_end = time.time()
         return q_end - q_start
-    except:
+    except Exception as e:
+        logging.error(f'query with id {id} throw exception {e}')
         return -1
 
 
@@ -124,7 +125,7 @@ def timed_exec(e):
             logging.info(
                 f"Query {sql_and_time['id']}, expected at second {sql_and_time['at_second']}," +
                 f" actual at second {time.time() - query_time_zero}")
-            futures += [pool.submit(query, query_script['database'], sql_and_time['sql'])]
+            futures += [pool.submit(query, query_script['database'], sql_and_time['sql'], sql_and_time['id'])]
         for future in as_completed(futures):
             result_book += [future.result()]
         assert len(result_book) == todo_num

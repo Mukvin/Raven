@@ -40,8 +40,6 @@ class Engine:
         result_data = my_query.get_result()
 
         logging.info(f"result rows: {len(result_data['ResultSet']['Rows'])}")
-        if self.print_result:
-            logging.info(result_data)
 
         duration = time.time() - start
         logging.info(f'a query took {duration} to complete')

@@ -101,6 +101,14 @@ def zoo2():
 
 
 if __name__ == '__main__':
+
+    import re
+
+    s = "where\n\tl_shipdate < date '1998-12-01'"
+    m = re.search(r'(l_shipdate|o_orderdate|l_receiptdate) (<>|>|<|>=|<=|between) date', s)
+    if m:
+        s = s.replace(m.group(), f'cast({m.group(1)} as Date) {m.group(2)} date')
+
     for i in range(22000):
         print(i)
     mu, sigma = 0, 1  # mean and standard deviation
@@ -112,7 +120,6 @@ if __name__ == '__main__':
              np.exp(- (bins - mu) ** 2 / (2 * sigma ** 2)),
              linewidth=2, color='r')
     plt.show()
-
 
     import logging.config
 
