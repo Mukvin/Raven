@@ -27,7 +27,7 @@ class Engine:
         pass
 
     # on failed queries, exceptions MUST be raised!
-    def accept_query(self, db, sql) -> float:
+    def accept_query(self, db, sql, id) -> float:
         start = time.time()
 
         my_query = AthenaQuery(

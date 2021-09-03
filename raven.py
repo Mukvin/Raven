@@ -1,21 +1,16 @@
 import collections
 
 import boto3 as boto3
-import pandas as pd
-import numpy as np
 import copy
 import random
-import sys
 import time
 import yaml
 import string
 import logging
 import logging.config
-import subprocess
 import gl
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Timer
-import threading
 import argparse
 import importlib
 
@@ -79,7 +74,7 @@ def check_query_script(am_or_pm, query_script, at_second_max):
 def query(db, sql, id):
     try:
         q_start = time.time()
-        engine.accept_query(db, sql)
+        engine.accept_query(db, sql, id)
         q_end = time.time()
         return q_end - q_start
     except Exception as e:
@@ -139,7 +134,7 @@ def init_glue_tables():
     with open(f"workloads/{gl.global_conf['WORKLOAD']}/glue_tables_cf_template.yaml") as file:
         glue_tables_cf_template = file.read()
     logging.info(f'Creating tables in glue ...')
-    stack_name = f'raven-stack-{random_identity}'
+    stack_name = f'RavenGlueStack{random_identity}'
     cf_r.create_stack(
         StackName=stack_name,
         TemplateBody=glue_tables_cf_template,

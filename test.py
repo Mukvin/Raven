@@ -2,15 +2,13 @@
 
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from threading import Timer
 
 import boto3 as boto3
 import pandas as pd
 import numpy as np
-import random
 import yaml
+from jinja2 import Template
 
 import gl
 
@@ -100,7 +98,96 @@ def zoo2():
     logging.info("query done")
 
 
+def testConfig(config):
+    config['2'] = 2
+
+
+
+def load_tables_into_kc(kylin_instance):
+    d = os.path.dirname(os.path.dirname(os.path.dirname('/Users/hongbin.ma/PycharmProjects/testPython/engines/kc/kc.py')))
+    with open(f"{d}/workloads/{gl.global_conf['WORKLOAD']}/query_script_pm.yaml") as file:
+        query_script = yaml.load(file, Loader=yaml.FullLoader)
+        db = query_script['database']
+    response = boto3.client('glue').get_tables(
+        DatabaseName=db
+    )
+    x = [1, 2]
+    y = next(iter(x))
+
+    ddl_template = """
+    CREATE DATABASE IF NOT EXISTS {{tables[0]['DatabaseName']}};
+    USE {{tables[0]['DatabaseName']}};
+
+    {% for table in tables %}
+    CREATE EXTERNAL TABLE IF NOT EXISTS {{table['DatabaseName']}}.{{table['Name']}}
+    (
+    {% for column in table['StorageDescriptor']['Columns'] %}
+    {{column['Name']}} {{column['Type']}}
+    {% if not loop.last %}, {% endif %}
+    {% endfor %}
+    )
+    STORED AS PARQUET
+    LOCATION {{table['StorageDescriptor']['Location']}};
+    {% endfor %}
+    """
+
+    tm = Template(ddl_template)
+    ddl = tm.render(tables=response['TableList'])
+    print(ddl)
+
+
 if __name__ == '__main__':
+    load_tables_into_kc(None)
+
+
+    def wrapper(f):
+        def wrapper_function(*args, **kwargs):
+            """这个是修饰函数"""
+            return f(*args, **kwargs) + 1
+
+        return wrapper_function
+
+
+    @wrapper
+    def wrapped(x):
+        """这个是被修饰的函数"""
+        print('wrapped')
+        return x + 1
+
+
+    print(wrapped(1))
+    print(wrapped.__doc__)  # 输出`这个是修饰函数`
+    print(wrapped.__name__)  # 输出`wrapper_function`
+
+
+    def partial(func, *args, **keywords):
+        def newfunc(*fargs, **fkeywords):
+            newkeywords = keywords.copy()
+            newkeywords.update(fkeywords)
+            return func(*args, *fargs, **newkeywords)
+
+        newfunc.func = func
+        newfunc.args = args
+        newfunc.keywords = keywords
+        return newfunc
+
+
+    try:
+        s = 1
+    except IOError:
+        pass
+    else:
+        x = 2
+
+
+    def add(x: int, y: int):
+        return x + y
+
+
+    # 这里创造了一个新的函数add2，只接受一个整型参数，然后将这个参数统一加上2
+    add2 = partial(add, y=2)
+
+    add2(3)  # 这里将会输出5
 
     import re
 

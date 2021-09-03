@@ -1,7 +1,7 @@
 #WORKLOAD: test_workload
 WORKLOAD: tpch_100
 
-ENGINE: athena
+ENGINE: kc
 
 # tagging for AWS resources
 TAGS:

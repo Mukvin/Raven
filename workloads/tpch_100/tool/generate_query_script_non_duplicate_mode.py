@@ -1,3 +1,7 @@
+# this script uses dbgen/qgen to generate 20000 queries(so that queries are as much different as possible)
+# , and assumes each engine can modify each query according to its own dialect
+
+
 import logging
 import os
 import re
@@ -7,9 +11,9 @@ from os import listdir
 from os.path import isfile, join
 
 if __name__ == '__main__':
-    generate_path = '/Users/hongbin.ma/code/tpch-kit/dbgen/scale100_queries'
-    query_count = 22000
-    guassian_dist = True
+    generate_path = '/Users/hongbin.ma/code/tpch-kit/dbgen/scale100_queries_sample'
+    query_count = 22
+    guassian_dist = False
 
 
     def readfile(f):
@@ -70,9 +74,7 @@ if __name__ == '__main__':
     for i in range(query_count):
         todo.append({"id": queries[i]["id"], "at_second": at_seconds[i], "sql": queries[i]["sql"]})
 
-    # print(todo)
-
     script = {"max_worker_num": 10000, "database": "raven_tpch_100_db", "queries": todo}
     result = yaml.dump(script)
-    with open(f"../temp.txt", 'x') as file:
+    with open(f"../temp.txt", 'w+') as file:
         yaml.dump(script, file)

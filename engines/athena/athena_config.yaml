@@ -1,3 +1,3 @@
-AWS_ATHENA_S3_STAGING_DIR: s3://raven-olap-benchmark/athena/staging
+AWS_ATHENA_S3_STAGING_DIR: s3://mhb-raven-dev-temp/athena/staging # [ACTION REQUIRED] : use you own bucket
 AWS_REGION: us-west-2
 PRINT_RESULT: True

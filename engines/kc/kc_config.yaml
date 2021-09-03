@@ -1,0 +1,43 @@
+AWS_REGION: 'us-west-2' # [ACTION REQUIRED] : choose your favored region
+deploy_version: 4.5.1-hadoop2
+license_path: '/Users/hongbin.ma/code/Kyligence Cloud LICENSE' # [ACTION REQUIRED] : use you own
+
+# kc spec
+BucketObject: "" # this will be filled in aws.py
+KeyName: "mhb_key_pair_dev" # [ACTION REQUIRED] : use you own existing EC2 KeyPair to enable SSH access to the instance
+InstanceType: "m5.xlarge"
+RDSType: "db.m5.xlarge"
+DBEngineType: "mariadb"
+InstanceCount: "1" # 2 means HA
+LoadBalancerSchema: "internet-facing"
+LokiOption: "enable"
+Monitor: "enable"
+RDSPassword: "passw0rd"
+TrustCidrs: "116.228.210.42/32" # [ACTION REQUIRED] : use you own corp's CIDR
+ZkInstancetype: "m5.large"
+Tags: { "Owner": "","Cost Center": "","Project": "","CRR": ""} # this will be filled in aws.py by copying values from global_config.yaml
+StackName: ""  # this will be filled in aws.py
+
+# workspace spec
+query_master_node_size: "m5.xlarge"
+query_work_node_size: "m5.2xlarge"
+edge_node_size: "m5.2xlarge"
+query_work_node_count: 1
+edge_node_count: 1
+build_upper_limit: 2
+build_lower_limit: 1
+build_master_node_size: "m5.xlarge"
+build_work_node_size: "m5.2xlarge"
+alluxio_node_size: "m5.xlarge"
+build_work_node_count: 1
+s3bucket: "mhb-raven-dev-kc-working-dir" # [ACTION REQUIRED] : use you own bucket, this is for KC index storage
+managed_storage: false
+edge_node_storage_type: "SSD"
+query_work_node_storage_type: "SSD"
+build_work_node_storage_type: "SSD"
+
+
+# for debug
+cloud_addr: 'Raven-KcLoa-1RI7ZI6RX2HU2-764474140.us-west-2.elb.amazonaws.com'
+cluster_id: 6
+skip_create_project: True
